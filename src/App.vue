@@ -15,4 +15,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+#app {
+  background-image: url("assets/extinction.jpg");
+  min-height: 100vh;
+  background-size: cover;
+  background-blend-mode: lighten;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 0.7) !important;
+}
+</style>
