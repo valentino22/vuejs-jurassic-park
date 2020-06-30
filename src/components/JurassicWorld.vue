@@ -84,53 +84,13 @@
             v-bind:key="(dino, index)"
             v-for="(dino, index) in dinos"
           >
-            <div class="row">
-              <div class="col-12">
-                <span
-                  class="font-weight-bold align-middle h5"
-                  v-bind:class="[dino.isLarge ? 'text-uppercase' : '']"
-                  v-bind:style="getDinoStyle(dino.dinoColor)"
-                >
-                  {{ dino.name }}
-                  <i
-                    v-if="dino.isDangerous"
-                    class="fas fa-claw-marks fa-lg mr-2"
-                  ></i>
-                </span>
-              </div>
-              <div class="col-12 mt-2">
-                Dino count:
-                <button
-                  class="btn btn-sm btn-primary"
-                  v-on:click="decreaseDinoCount(index)"
-                  v-bind:disabled="dino.count == 1"
-                >
-                  <i class="fas fa-chevron-down"></i>
-                </button>
-                <span class="align-middle"> {{ dino.count }} </span>
-                <button
-                  class="btn btn-sm btn-primary"
-                  v-on:click="increaseDinoCount(index)"
-                >
-                  <i class="fas fa-chevron-up"></i>
-                </button>
-                <button
-                  class="btn btn-danger btn-sm float-right"
-                  v-on:click="deleteDino(index)"
-                >
-                  Make extinct
-                  <i class="fas fa-meteor fa-lg"></i>
-                </button>
-              </div>
-            </div>
-            <div class="row my-2">
-              <span class="col-12"
-                >URL:
-                <a :href="dino.name | undercase | url" target="_blank"
-                  >{{ dino.name | undercase | url }}
-                </a>
-              </span>
-            </div>
+            <Dino
+              :dino="dino"
+              :index="index"
+              v-on:increase-dino-count="onIncreaseDinoCount"
+              v-on:decrease-dino-count="onDecreaseDinoCount"
+              v-on:delete-dino="onDeleteDino"
+            ></Dino>
           </li>
         </ul>
       </div>
@@ -142,7 +102,8 @@
 </template>
 
 <script>
-import _ from "lodash";
+import { debounce } from "lodash";
+import Dino from "../components/Dino.vue";
 
 export default {
   name: "JurassicWorld",
@@ -179,6 +140,15 @@ export default {
     ]
   }),
   methods: {
+    onIncreaseDinoCount: function(idx) {
+      this.dinos[idx].count++;
+    },
+    onDecreaseDinoCount: function(idx) {
+      this.dinos[idx].count--;
+    },
+    onDeleteDino: function(index) {
+      this.dinos.splice(index, 1);
+    },
     addDino: function() {
       if (this.dinoForm != "") {
         this.dinos.push({
@@ -193,20 +163,6 @@ export default {
         this.isDangerous = false;
         this.dinoColor = "#ffb930";
       }
-    },
-    deleteDino: function(index) {
-      this.dinos.splice(index, 1);
-    },
-    increaseDinoCount: function(idx) {
-      this.dinos[idx].count++;
-    },
-    decreaseDinoCount: function(idx) {
-      this.dinos[idx].count--;
-    },
-    getDinoStyle: function(dinoColor) {
-      return {
-        color: dinoColor
-      };
     }
   },
   computed: {
@@ -224,18 +180,6 @@ export default {
       };
     }
   },
-  filters: {
-    undercase: value => {
-      if (!value) return "";
-      value = value.toString();
-      return value.toLowerCase();
-    },
-    url: link => {
-      if (!link) return "";
-      link = link.toString();
-      return "https://en.wikipedia.org/wiki/" + link;
-    }
-  },
   directives: {
     focus: {
       inserted: function(el) {
@@ -244,10 +188,13 @@ export default {
     }
   },
   watch: {
-    dinoForm: _.debounce(function() {
+    dinoForm: debounce(function() {
       this.buttonText =
         this.dinoForm !== "" ? "Add " + this.dinoForm : "Add Dino";
     }, 250)
+  },
+  components: {
+    Dino
   }
 };
 </script>
