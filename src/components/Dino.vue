@@ -25,7 +25,7 @@
         <span class="align-middle"> {{ dino.count }} </span>
         <button
           class="btn btn-sm btn-primary"
-          v-on:click="$emit('increase-dino-count', index)"
+          v-on:[dynamicAttributeName]="$emit('increase-dino-count', index)"
         >
           <i class="fas fa-chevron-up"></i>
         </button>
@@ -53,6 +53,9 @@
 module.exports = {
   name: "Dino",
   props: ["dino", "index"],
+  data: () => ({
+    dynamicAttributeName: "click"
+  }),
   methods: {
     getDinoStyle: function(dinoColor) {
       return {

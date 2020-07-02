@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { debounce } from "lodash";
+import debounce from "lodash-es/debounce";
 import Dino from "../components/Dino.vue";
 
 export default {
