@@ -10,7 +10,7 @@
     <div id="content">
       <div class="card pt-4 px-4 content-item">
         <h5 class="card-title">Add new dino species</h5>
-        <form v-on:submit.prevent="addDino">
+        <form v-on:submit.prevent="addDinosaur">
           <fieldset v-bind:disabled="noMoreDinos" class="my-2">
             <label
               for="large"
@@ -38,10 +38,10 @@
             <div class="input-group col-12">
               <input
                 placeholder="Dino name..."
-                v-model="dinoForm"
+                v-model="dinoName"
                 v-bind:class="[isLarge ? 'text-uppercase' : '']"
                 v-focus
-                id="dinoForm"
+                id="dinoName"
                 v-bind:style="styles"
               />
               <div class="input-group-append">
@@ -79,19 +79,13 @@
           <span class="my-2 ml-4">Total Dinos: {{ totalDinos }}</span>
         </div>
         <ul class="list-group list-group-flush">
-          <li
+          <Dino
             class="list-group-item my-2"
-            v-bind:key="(dino, index)"
-            v-for="(dino, index) in dinos"
+            v-for="dino in allDinos"
+            v-bind:dino="dino"
+            v-bind:key="dino.id"
           >
-            <Dino
-              :dino="dino"
-              :index="index"
-              v-on:increase-dino-count="onIncreaseDinoCount"
-              v-on:decrease-dino-count="onDecreaseDinoCount"
-              v-on:delete-dino="onDeleteDino"
-            ></Dino>
-          </li>
+          </Dino>
         </ul>
       </div>
       <div v-else class="card p-4 my-3 stats-item">
@@ -104,61 +98,31 @@
 <script>
 import debounce from "lodash-es/debounce";
 import Dino from "../components/Dino.vue";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "JurassicWorld",
   data: () => ({
     title: "Jurassic Park",
-    buttonText: "Add Dino",
+    dinoName: "",
     isLarge: false,
-    noMoreDinos: false,
-    dinoForm: "",
     isDangerous: false,
     dinoColor: "#ffb930",
-    dinos: [
-      {
-        name: "Velociraptor",
-        count: 2,
-        isLarge: false,
-        isDangerous: true,
-        dinoColor: "#ffca00"
-      },
-      {
-        name: "T-rex",
-        count: 1,
-        isLarge: true,
-        isDangerous: true,
-        dinoColor: "#ff6e0a"
-      },
-      {
-        name: "Diplodocus",
-        count: 3,
-        isLarge: true,
-        isDangerous: false,
-        dinoColor: "#ff6e0a"
-      }
-    ]
+    noMoreDinos: false,
+    buttonText: "Add Dino"
   }),
   methods: {
-    onIncreaseDinoCount: function(idx) {
-      this.dinos[idx].count++;
-    },
-    onDecreaseDinoCount: function(idx) {
-      this.dinos[idx].count--;
-    },
-    onDeleteDino: function(index) {
-      this.dinos.splice(index, 1);
-    },
-    addDino: function() {
-      if (this.dinoForm != "") {
-        this.dinos.push({
-          name: this.dinoForm,
+    ...mapActions(["addDino"]),
+    addDinosaur() {
+      if (this.dinoName != "") {
+        this.addDino({
+          name: this.dinoName,
           count: 1,
           isLarge: this.isLarge,
           isDangerous: this.isDangerous,
           dinoColor: this.dinoColor
         });
-        this.dinoForm = "";
+        this.dinoName = "";
         this.isLarge = false;
         this.isDangerous = false;
         this.dinoColor = "#ffb930";
@@ -166,15 +130,8 @@ export default {
     }
   },
   computed: {
-    totalSpecies: function() {
-      return this.dinos.length;
-    },
-    totalDinos: function() {
-      return this.dinos.reduce(function(total, dino) {
-        return total + dino.count;
-      }, 0);
-    },
-    styles: function() {
+    ...mapGetters(["allDinos", "totalSpecies", "totalDinos"]),
+    styles() {
       return {
         color: this.dinoColor
       };
@@ -188,9 +145,9 @@ export default {
     }
   },
   watch: {
-    dinoForm: debounce(function() {
+    dinoName: debounce(function() {
       this.buttonText =
-        this.dinoForm !== "" ? "Add " + this.dinoForm : "Add Dino";
+        this.dinoName !== "" ? "Add " + this.dinoName : "Add Dino";
     }, 250)
   },
   components: {
