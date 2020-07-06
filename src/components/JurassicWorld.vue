@@ -112,7 +112,7 @@ export default {
     buttonText: "Add Dino"
   }),
   methods: {
-    ...mapActions(["addDino"]),
+    ...mapActions("dinos", ["addDino"]),
     addDinosaur() {
       if (this.dinoName != "") {
         this.addDino({
@@ -130,7 +130,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["allDinos", "totalSpecies", "totalDinos"]),
+    ...mapGetters("dinos", ["allDinos", "totalSpecies", "totalDinos"]),
     styles() {
       return {
         color: this.dinoColor
@@ -152,6 +152,10 @@ export default {
   },
   components: {
     Dino
+  },
+  // created is a lifecycle hook can be used to run code after an instance is created
+  created() {
+    this.$store.dispatch("dinos/getAllDinos");
   }
 };
 </script>

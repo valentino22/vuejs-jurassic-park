@@ -18,7 +18,7 @@
           Dino count:
           <button
             class="btn btn-sm btn-primary"
-            v-on:click="$store.dispatch('decreaseDinoCount', dino.id)"
+            v-on:click="$store.dispatch('dinos/decreaseDinoCount', dino.id)"
             v-bind:disabled="dino.count == 1"
           >
             <i class="fas fa-chevron-down"></i>
@@ -27,14 +27,14 @@
           <button
             class="btn btn-sm btn-primary"
             v-on:[dynamicAttributeName]="
-              $store.dispatch('increaseDinoCount', dino.id)
+              $store.dispatch('dinos/increaseDinoCount', dino.id)
             "
           >
             <i class="fas fa-chevron-up"></i>
           </button>
           <button
             class="btn btn-danger btn-sm float-right"
-            v-on:click="$store.dispatch('deleteDino', dino.id)"
+            v-on:click="$store.dispatch('dinos/deleteDino', dino.id)"
           >
             Make extinct
             <i class="fas fa-meteor fa-lg"></i>

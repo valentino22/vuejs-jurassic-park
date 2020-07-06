@@ -1,37 +1,10 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import dinos from "../../api/dinosAPI";
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default {
   strict: true,
+  namespaced: true,
   state: {
-    dinos: [
-      {
-        id: 0,
-        name: "Velociraptor",
-        count: 2,
-        isLarge: false,
-        isDangerous: true,
-        dinoColor: "#ffca00"
-      },
-      {
-        id: 1,
-        name: "T-rex",
-        count: 1,
-        isLarge: true,
-        isDangerous: true,
-        dinoColor: "#ff6e0a"
-      },
-      {
-        id: 2,
-        name: "Diplodocus",
-        count: 3,
-        isLarge: true,
-        isDangerous: false,
-        dinoColor: "#ff6e0a"
-      }
-    ],
+    all: [], // initial state, it's empty first
     nextDinoId: 3
   },
 
@@ -40,32 +13,35 @@ export default new Vuex.Store({
       return state.nextDinoId;
     },
     allDinos: state => {
-      return state.dinos;
+      return state.all;
     },
     totalSpecies: state => {
-      return state.dinos.length;
+      return state.all.length;
     },
     totalDinos: state => {
-      return state.dinos.reduce(function(total, dino) {
+      return state.all.reduce(function(total, dino) {
         return total + dino.count;
       }, 0);
     }
   },
 
   mutations: {
+    SET_DINOS(state, dinos) {
+      state.all = dinos;
+    },
     DECREASE_DINO_COUNT(state, dinoIndex) {
-      const dino = state.dinos.find(dino => dino.id === dinoIndex);
+      const dino = state.all.find(dino => dino.id === dinoIndex);
       dino.count--;
     },
     INCREASE_DINO_COUNT(state, dinoIndex) {
-      const dino = state.dinos.find(dino => dino.id === dinoIndex);
+      const dino = state.all.find(dino => dino.id === dinoIndex);
       dino.count++;
     },
     DELETE_DINO(state, dinoIndex) {
-      state.dinos = state.dinos.filter(dino => dino.id != dinoIndex);
+      state.all = state.all.filter(dino => dino.id != dinoIndex);
     },
     ADD_DINO(state, dino) {
-      state.dinos.push({
+      state.all.push({
         id: state.nextDinoId,
         name: dino.name,
         count: 1,
@@ -80,6 +56,11 @@ export default new Vuex.Store({
   },
 
   actions: {
+    getAllDinos({ commit }) {
+      dinos.getDinos(dinos => {
+        commit("SET_DINOS", dinos);
+      });
+    },
     decreaseDinoCount({ commit }, dinoIndex) {
       commit("DECREASE_DINO_COUNT", dinoIndex);
     },
@@ -97,4 +78,4 @@ export default new Vuex.Store({
       commit("INCREASE_NEXT_DINO_ID");
     }
   }
-});
+};
